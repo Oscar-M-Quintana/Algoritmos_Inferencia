@@ -1,0 +1,106 @@
+CELDA 1
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+
+# Ruta del archivo local
+ruta_archivo = "REEEMPLAZAR POR LA RUTA DEL ARCHIVO LOCAL"  
+
+# Cargar el dataset desde la ruta local
+data = pd.read_csv(ruta_archivo, encoding='latin1', delimiter=',')  # Ajusta la codificación y el delimitador según tu archivo
+
+print(data.head())
+data.info()
+
+print(data.head())
+
+CELDA 2
+
+# Seleccionar las columnas numéricas que serán usadas para PCA
+features = ['Temperature (K)', 'Luminosity(L/Lo)', 'Radius(R/Ro)', 'Absolute magnitude(Mv)']
+x = data[features].values
+
+# Estandarizar los datos
+scaler = StandardScaler()
+x_scaled = scaler.fit_transform(x)
+
+CELDA 3
+
+# Inicializar PCA con el número de componentes deseado (por ejemplo, 4 componentes principales)
+pca = PCA(n_components=4)
+
+# Ajustar PCA a los datos escalados
+principal_components = pca.fit_transform(x_scaled)
+
+# Crear un DataFrame con los componentes principales
+pca_df = pd.DataFrame(data=principal_components, columns=['PC1', 'PC2','PCA3','PCA4'])
+
+# Añadir las otras columnas para referencia
+final_df = pd.concat([pca_df, data[['Star type']]], axis=1)
+
+# Mostrar las primeras filas del nuevo DataFrame
+print(final_df.head())
+
+CELDA 4
+
+#CODIGO PARA SABER CUANTO APORTA CADA VARIABLE A CADA COMPONENTE
+columnas_numericas = data.columns[0:4]  # Selección de las columnas 1 a 3 (en base 0).
+
+# Convertir el array a DataFrame para añadir nombres a los ejes.
+pca_df = pd.DataFrame(
+    data    = pca.components_,
+    columns = columnas_numericas,
+    index   = ['PC1', 'PC2', 'PC3','PCA4']  # Ajuste a 3 componentes principales
+)
+
+pca_df
+
+CELDA 5
+
+# Visualizar los componentes principales con un scatter plot
+plt.figure(figsize=(10, 7))
+sns.scatterplot(x='PC1', y='PC2', hue='Star type', data=final_df, palette='Set1')
+
+plt.title('PCA of Star Dataset')
+plt.xlabel('Principal Component 1')
+plt.ylabel('Principal Component 2')
+plt.show()
+
+CELDA 6
+
+# Porcentaje de varianza explicada por cada componente
+# ==============================================================================
+print('----------------------------------------------------')
+print('Porcentaje de varianza explicada por cada componente')
+print('----------------------------------------------------')
+print(pca.explained_variance_ratio_)
+
+fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(6, 4))
+ax.bar(
+    x      = np.arange(pca.n_components_) + 1,
+    height = pca.explained_variance_ratio_
+)
+
+for x, y in zip(np.arange(len(data.columns)) + 1, pca.explained_variance_ratio_):
+    label = round(y, 2)
+    ax.annotate(
+        label,
+        (x,y),
+        
+        textcoords="offset points",
+        xytext=(0,10),
+        ha='center'
+    )
+
+ax.set_xticks(np.arange(pca.n_components_) + 1)
+ax.set_ylim(0, 1.1)
+ax.set_title('Porcentaje de varianza explicada por cada componente')
+ax.set_xlabel('Componente principal')
+ax.set_ylabel('Por. varianza explicada');
+
+
+
+
