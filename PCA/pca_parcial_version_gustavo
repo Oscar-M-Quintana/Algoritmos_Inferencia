@@ -1,0 +1,131 @@
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+
+# Ruta del archivo local
+ruta_archivo = "C:/Users/gusta/OneDrive/Desktop/calidadvino.csv"  # Reemplaza esta ruta con la ruta de tu archivo local
+
+# Cargar el dataset desde la ruta local
+data = pd.read_csv(ruta_archivo, encoding='latin1', delimiter=',')  # Ajusta la codificación y el delimitador según tu archivo
+
+print(data.head())
+data.info()
+
+print(data.head())
+
+
+
+
+
+# Seleccionar las columnas numéricas que serán usadas para PCA
+features = ['Tartaric Acid','Grape Density','Citric Acid','Residual.sugar','Sodium chloride','Free.sulfur.dioxide',
+            'Bound.sulfur.dioxide','Alcohol Density','PH Levels','Potassium chloride','Alcohol Content']
+x = data[features].values
+
+# Estandarizar los datos
+scaler = StandardScaler()
+x_scaled = scaler.fit_transform(x)
+
+
+
+
+
+
+# Inicializar PCA con el número de componentes deseado (por ejemplo, 4 componentes principales)
+pca = PCA(n_components=4)
+
+# Ajustar PCA a los datos escalados
+principal_components = pca.fit_transform(x_scaled)
+
+# Crear un DataFrame con los componentes principales
+pca_df = pd.DataFrame(data=principal_components, columns=['PCA1', 'PCA2','PCA3','PCA4'])
+
+
+# Mostrar las primeras filas del nuevo DataFrame
+print(pca_df.head())
+
+
+
+
+
+
+
+# Selección de todas las columnas numéricas
+columnas_numericas = data.columns[:11]  # Tus 11 columnas originales
+
+# Convertir el array de componentes del PCA a DataFrame para ver el aporte de cada variable a los 4 componentes
+pca_contrib_df = pd.DataFrame(
+    data    = pca.components_,          # Esto contiene las contribuciones de cada variable a cada componente
+    columns = columnas_numericas,       # Las 11 columnas originales
+    index   = ['PCA1', 'PCA2', 'PCA3', 'PCA4']  # Los 4 componentes que calculaste
+)
+
+# Mostrar el DataFrame con las contribuciones
+print(pca_contrib_df)
+
+
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Crear un DataFrame con los componentes principales (ya lo tienes calculado)
+pca_df = pd.DataFrame(data=principal_components, columns=['PCA1', 'PCA2', 'PCA3', 'PCA4'])
+
+# Visualizar los componentes principales con un scatter plot
+plt.figure(figsize=(10, 7))
+
+# Si tienes una variable categórica, puedes reemplazar 'None' con el nombre de esa columna
+sns.scatterplot(x='PCA1', y='PCA2', data=pca_df, palette='Set1')
+
+plt.title('PCA of Dataset')
+plt.xlabel('Principal Component 1')
+plt.ylabel('Principal Component 2')
+plt.show()
+
+
+
+
+
+
+# Porcentaje de varianza explicada por cada componente
+# ==============================================================================
+print('----------------------------------------------------')
+print('Porcentaje de varianza explicada por cada componente')
+print('----------------------------------------------------')
+print(pca.explained_variance_ratio_)
+
+fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(6, 4))
+
+# Crear una gráfica de barras para visualizar el porcentaje de varianza explicada
+ax.bar(
+    x      = np.arange(pca.n_components_) + 1,  # Número de componentes principales
+    height = pca.explained_variance_ratio_      # Porcentaje de varianza explicada por cada componente
+)
+
+# Añadir etiquetas a cada barra (el porcentaje de varianza explicada)
+for x, y in zip(np.arange(pca.n_components_) + 1, pca.explained_variance_ratio_):
+    label = round(y, 2)  # Redondear el porcentaje a 2 decimales
+    ax.annotate(
+        label,
+        (x, y),
+        textcoords="offset points",  # Alinear el texto
+        xytext=(0, 10),              # Separación en pixeles sobre la barra
+        ha='center'                  # Alinear horizontalmente en el centro de la barra
+    )
+
+# Configuración de los ejes
+ax.set_xticks(np.arange(pca.n_components_) + 1)
+ax.set_ylim(0, 1.1)  # Límite del eje Y
+ax.set_title('Porcentaje de varianza explicada por cada componente')
+ax.set_xlabel('Componente principal')
+ax.set_ylabel('Porcentaje de varianza explicada')
+
+plt.show()
+
+
+
+
+
