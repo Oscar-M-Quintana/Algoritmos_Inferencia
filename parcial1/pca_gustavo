@@ -6,10 +6,12 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 
 # Ruta del archivo local
-ruta_archivo = "C:/Users/gusta/OneDrive/Desktop/calidadvino.csv"  # Reemplaza esta ruta con la ruta de tu archivo local
+# Reemplaza esta ruta con la ruta de tu archivo local
+ruta_archivo = "C:/Users/gusta/OneDrive/Desktop/calidadvino.csv"
 
 # Cargar el dataset desde la ruta local
-data = pd.read_csv(ruta_archivo, encoding='latin1', delimiter=',')  # Ajusta la codificación y el delimitador según tu archivo
+# Ajusta la codificación y el delimitador según tu archivo
+data = pd.read_csv(ruta_archivo, encoding='latin1', delimiter=',')
 
 print(data.head())
 data.info()
@@ -17,21 +19,14 @@ data.info()
 print(data.head())
 
 
-
-
-
 # Seleccionar las columnas numéricas que serán usadas para PCA
-features = ['Tartaric Acid','Grape Density','Citric Acid','Residual.sugar','Sodium chloride','Free.sulfur.dioxide',
-            'Bound.sulfur.dioxide','Alcohol Density','PH Levels','Potassium chloride','Alcohol Content']
+features = ['Tartaric Acid', 'Grape Density', 'Citric Acid', 'Residual.sugar', 'Sodium chloride', 'Free.sulfur.dioxide',
+            'Bound.sulfur.dioxide', 'Alcohol Density', 'PH Levels', 'Potassium chloride', 'Alcohol Content']
 x = data[features].values
 
 # Estandarizar los datos
 scaler = StandardScaler()
 x_scaled = scaler.fit_transform(x)
-
-
-
-
 
 
 # Inicializar PCA con el número de componentes deseado (por ejemplo, 4 componentes principales)
@@ -41,36 +36,30 @@ pca = PCA(n_components=4)
 principal_components = pca.fit_transform(x_scaled)
 
 # Crear un DataFrame con los componentes principales
-pca_df = pd.DataFrame(data=principal_components, columns=['PCA1', 'PCA2','PCA3','PCA4'])
+pca_df = pd.DataFrame(data=principal_components, columns=[
+                      'PCA1', 'PCA2', 'PCA3', 'PCA4'])
 
 
 # Mostrar las primeras filas del nuevo DataFrame
 print(pca_df.head())
 
 
-
-
-
-
-
-import seaborn as sns
-import matplotlib.pyplot as plt
-
 # Crear el DataFrame con las contribuciones de cada variable a los componentes principales
 pca_contrib_df = pd.DataFrame(
-    data    = pca.components_,
-    columns = columnas_numericas,       # Las 11 columnas originales
-    index   = ['PCA1', 'PCA2', 'PCA3', 'PCA4']  # Los 4 componentes principales
+    data=pca.components_,
+    columns=columnas_numericas,       # Las 11 columnas originales
+    index=['PCA1', 'PCA2', 'PCA3', 'PCA4']  # Los 4 componentes principales
 )
 
 # Crear un heatmap con los datos de la matriz de componentes
 plt.figure(figsize=(10, 6))  # Ajustar el tamaño de la figura
 sns.heatmap(
-    data       = pca_contrib_df,      # Datos de las contribuciones
-    annot      = True,                # Mostrar los valores en cada celda
-    cmap       = 'RdBu',              # Color de la escala, rojo (alto positivo) a azul (alto negativo)
-    center     = 0,                   # Centramos la escala en 0
-    linewidths = 0.5                  # Añadir líneas entre celdas
+    data=pca_contrib_df,      # Datos de las contribuciones
+    annot=True,                # Mostrar los valores en cada celda
+    # Color de la escala, rojo (alto positivo) a azul (alto negativo)
+    cmap='RdBu',
+    center=0,                   # Centramos la escala en 0
+    linewidths=0.5                  # Añadir líneas entre celdas
 )
 
 plt.title('Contribuciones de las variables a cada componente principal')
@@ -79,14 +68,9 @@ plt.ylabel('Componentes principales')
 plt.show()
 
 
-
-
-
-import matplotlib.pyplot as plt
-import seaborn as sns
-
 # Crear un DataFrame con los componentes principales (ya lo tienes calculado)
-pca_df = pd.DataFrame(data=principal_components, columns=['PCA1', 'PCA2', 'PCA3', 'PCA4'])
+pca_df = pd.DataFrame(data=principal_components, columns=[
+                      'PCA1', 'PCA2', 'PCA3', 'PCA4'])
 
 # Visualizar los componentes principales con un scatter plot
 plt.figure(figsize=(10, 7))
@@ -100,10 +84,6 @@ plt.ylabel('Principal Component 2')
 plt.show()
 
 
-
-
-
-
 # Porcentaje de varianza explicada por cada componente
 # ==============================================================================
 print('----------------------------------------------------')
@@ -115,8 +95,9 @@ fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(6, 4))
 
 # Crear una gráfica de barras para visualizar el porcentaje de varianza explicada
 ax.bar(
-    x      = np.arange(pca.n_components_) + 1,  # Número de componentes principales
-    height = pca.explained_variance_ratio_      # Porcentaje de varianza explicada por cada componente
+    x=np.arange(pca.n_components_) + 1,  # Número de componentes principales
+    # Porcentaje de varianza explicada por cada componente
+    height=pca.explained_variance_ratio_
 )
 
 # Añadir etiquetas a cada barra (el porcentaje de varianza explicada)
@@ -138,8 +119,3 @@ ax.set_xlabel('Componente principal')
 ax.set_ylabel('Porcentaje de varianza explicada')
 
 plt.show()
-
-
-
-
-
