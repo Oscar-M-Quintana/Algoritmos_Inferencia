@@ -6,7 +6,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 
 # Ruta del archivo local
-ruta_archivo = "C:/Users/gusta/OneDrive/Desktop/calidadvino.csv"  # Reemplaza esta ruta con la ruta de tu archivo local
+ruta_archivo = ""  # Reemplaza esta ruta con la ruta de tu archivo local
 
 # Cargar el dataset desde la ruta local
 data = pd.read_csv(ruta_archivo, encoding='latin1', delimiter=',')  # Ajusta la codificación y el delimitador según tu archivo
@@ -53,18 +53,32 @@ print(pca_df.head())
 
 
 
-# Selección de todas las columnas numéricas
-columnas_numericas = data.columns[:11]  # Tus 11 columnas originales
+import seaborn as sns
+import matplotlib.pyplot as plt
 
-# Convertir el array de componentes del PCA a DataFrame para ver el aporte de cada variable a los 4 componentes
+# Crear el DataFrame con las contribuciones de cada variable a los componentes principales
 pca_contrib_df = pd.DataFrame(
-    data    = pca.components_,          # Esto contiene las contribuciones de cada variable a cada componente
+    data    = pca.components_,
     columns = columnas_numericas,       # Las 11 columnas originales
-    index   = ['PCA1', 'PCA2', 'PCA3', 'PCA4']  # Los 4 componentes que calculaste
+    index   = ['PCA1', 'PCA2', 'PCA3', 'PCA4']  # Los 4 componentes principales
 )
 
-# Mostrar el DataFrame con las contribuciones
-print(pca_contrib_df)
+# Crear un heatmap con los datos de la matriz de componentes
+plt.figure(figsize=(10, 6))  # Ajustar el tamaño de la figura
+sns.heatmap(
+    data       = pca_contrib_df,      # Datos de las contribuciones
+    annot      = True,                # Mostrar los valores en cada celda
+    cmap       = 'RdBu',              # Color de la escala, rojo (alto positivo) a azul (alto negativo)
+    center     = 0,                   # Centramos la escala en 0
+    linewidths = 0.5                  # Añadir líneas entre celdas
+)
+
+plt.title('Contribuciones de las variables a cada componente principal')
+plt.xlabel('Variables')
+plt.ylabel('Componentes principales')
+plt.show()
+
+
 
 
 
@@ -124,6 +138,9 @@ ax.set_xlabel('Componente principal')
 ax.set_ylabel('Porcentaje de varianza explicada')
 
 plt.show()
+
+
+
 
 
 
